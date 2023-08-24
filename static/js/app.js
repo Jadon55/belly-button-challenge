@@ -1,6 +1,6 @@
 let allMetadata;
 let allSamples;
-d3.json("../samples.json").then(data =>{
+d3.json(".././samples.json").then(data =>{
     // get values from data
     let sample_values = data.samples[0].sample_values;
     let otu_ids = data.samples[0].otu_ids;
