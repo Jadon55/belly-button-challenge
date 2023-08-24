@@ -1,18 +1,20 @@
 let allMetadata;
+let allSamples;
 d3.json("../samples.json").then(data =>{
     // get values from data
     let sample_values = data.samples[0].sample_values;
     let otu_ids = data.samples[0].otu_ids;
     let otu_labels = data.samples[0].otu_labels;
     allMetadata = data.metadata;
+    allSamples = data.samples;
 
-    // horizontal bar chart
+    // Inital horizontal bar chart
     makeBar(sample_values, otu_ids, otu_labels);
 
-    // bubble chart
+    // Inital bubble chart
     makeBubble(otu_ids, sample_values, sample_values, otu_ids, otu_labels)
 
-    // Demographic Info
+    // Inital Demographic Info
     demoInfo(data.metadata[0]);
 
     // fill the dropdown menu with all the IDs
@@ -22,8 +24,7 @@ d3.json("../samples.json").then(data =>{
     });
     fillDropdown(ids);
 
-    // Bonus challenge
-    
+    // Inital guage
     makeGauge(data.metadata[0]);
 });
 
@@ -42,6 +43,8 @@ function makeBar(values, labels, hoverText){
     let topValues = topIndices.map(index => values[index]);
     let topLabels = topIndices.map(index => hoverText[index]);
 
+
+    // graph
     var graphData = [{
         x: topValues,
         y: topIds,
@@ -50,20 +53,11 @@ function makeBar(values, labels, hoverText){
         orientation: 'h'
     }];
     
-    var layout = {
-        title: `Bar Chart`,
-        xaxis: {
-            title: 'Values'
-        },
-        yaxis: {
-            title: 'Categories'
-        }
-    };
-    
-    Plotly.newPlot('bar', graphData, layout);
+    Plotly.newPlot('bar', graphData);
 };
 
 function makeBubble(xVal, yVal, markerSize, markerColor, textValues){
+    // data for graph
     let data = [{
         x: xVal,
         y: yVal,
@@ -76,6 +70,7 @@ function makeBubble(xVal, yVal, markerSize, markerColor, textValues){
         }
     }];
     
+    // labels for graph
     let layout = {
         title: 'Bubble Chart',
         xaxis: {
@@ -86,11 +81,12 @@ function makeBubble(xVal, yVal, markerSize, markerColor, textValues){
         }
     };
     
+    // graph
     Plotly.newPlot('bubble', data, layout);
 };
 
 function demoInfo(data){
-    // Select the div to add the data to
+    // Select the <div> to add the data to
     const contentDiv = document.getElementById('sample-metadata');
 
 
@@ -107,6 +103,7 @@ function demoInfo(data){
 };
 
 function fillDropdown(ids){
+    // Select the <select> to add the data to
     const contentDiv = document.getElementById('selDataset');
     ids.forEach(id => {
         // Create an <option> element
@@ -132,10 +129,20 @@ function optionChanged(id){
 
     // use demoInfo to add the metadata to the HTML
     demoInfo(allMetadata[index]);
-    makeGauge(allMetadata[index])
+    makeGauge(allMetadata[index]);
+
+    // update bar chart
+    let sample_values = allSamples[index].sample_values;
+    let otu_ids = allSamples[index].otu_ids;
+    let otu_labels = allSamples[index].otu_labels;
+    makeBar(sample_values, otu_ids, otu_labels);
+    
+    // update bubble chart
+    makeBubble(otu_ids, sample_values, sample_values, otu_ids, otu_labels)
 };
 
 function makeGauge(data){
+    // graph settings
     var data = [
         {
             domain: { x: [0, 1], y: [0, 1] },
@@ -166,7 +173,7 @@ function makeGauge(data){
             },
         }
       ];
-    
+    // graph size
     var layout = {
         width: 600,
         height: 500,
@@ -175,6 +182,6 @@ function makeGauge(data){
             b: 0
         }
     };
-
+    // graph
     Plotly.newPlot('gauge', data, layout);
 };
